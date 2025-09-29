@@ -8,10 +8,8 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    bufferLogs: true, // para capturar logs antes de que se inicie la app
+    bufferLogs: true,
   });
-
-  // Obtener el logger correcto de nestjs-pino
   const logger = app.get(PinoLogger);
   app.useLogger(logger);
 
