@@ -24,10 +24,44 @@ export class PaymentsService {
     return payment;
   }
 
-  async searchPayments(dto: SearchPaymentDto) {
-    const { page = 1, paginate = 10, ...filters } = dto;
-    return this.paymentsRepo.search(filters, page, paginate);
+  async searchPayments(filters: any, page = 1, pageSize = 10) {
+    const skip = (page - 1) * pageSize;
+    const where: any = {};
+
+    if (filters.status) where.status = filters.status;
+    if (filters.startCreationDate || filters.endCreationDate) {
+      where.createdAt = {};
+      if (filters.startCreationDate) {
+        where.createdAt.gte = new Date(filters.startCreationDate);
+      }
+      if (filters.endCreationDate) {
+        where.createdAt.lte = new Date(filters.endCreationDate);
+      }
+    }
+    if (filters.startPaymentDate || filters.endPaymentDate) {
+      where.dueDate = {};
+      if (filters.startPaymentDate) {
+        where.dueDate.gte = new Date(filters.startPaymentDate);
+      }
+      if (filters.endPaymentDate) {
+        where.dueDate.lte = new Date(filters.endPaymentDate);
+      }
+    }
+
+    const items = await this.paymentsRepo.search(where, skip, pageSize);
+
+    const totalItems = await this.paymentsRepo.count(where);
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return {
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      items,
+    };
   }
+
 
   async cancelPayment(dto: CancelPaymentDto) {
     const payment = await this.paymentsRepo.findByReference(dto.reference);
@@ -42,5 +76,6 @@ export class PaymentsService {
 
     return this.paymentsRepo.cancel(dto);
   }
+
 
 }
