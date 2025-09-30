@@ -11,7 +11,7 @@ export class PaymentsService {
 
   async createPayment(userId: number, dto: CreatePaymentDto) {
     if (dto.amount <= 0) throw new Error('Amount must be greater than zero');
-    const exists = await this.paymentsRepo.findByReference(dto.externalId);
+    const exists = await this.paymentsRepo.findByExternalId(dto.externalId);
     if (exists) throw new Error('ExternalId already exists');
     const dueDate = new Date(dto.dueDate);
     if (isNaN(dueDate.getTime())) throw new Error('Invalid due date');

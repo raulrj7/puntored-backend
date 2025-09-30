@@ -16,8 +16,6 @@ async function main() {
       role: 'ADMIN',
     },
   });
-
-  console.log('Usuario admin creado:', admin);
 }
 
 main()
