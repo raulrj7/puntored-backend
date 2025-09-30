@@ -9,8 +9,6 @@ export class IpRestrictionMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const clientIp = requestIp.getClientIp(req);
-    console.log('Client IP:', clientIp);
-
     const isBlocked = await this.ipService.isBlocked(clientIp);
     if (isBlocked) {
       throw new ForbiddenException(`${clientIp} blocked`);
